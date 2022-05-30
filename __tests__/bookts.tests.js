@@ -25,7 +25,7 @@ afterAll(async () =>{
 
 describe("POST /books", function (){
     test("Create new book", async function(){
-        const res = await (await request(app).post(`/books`)).send({
+        const res = await await request(app).post(`/books`).send({
             isbn: '987654',
             amazon_url: 'https://amazon.com',
             author: "kaia",
@@ -38,3 +38,34 @@ describe("POST /books", function (){
         expect(res.body.book).toHaveProperty("isbn");
     });
 })
+
+
+describe("GET /books/:isbn", function(){
+    test("Get specific book", async function(){
+        const res = await request(app).get(`/books/${bookISBN}`)
+        expect(res.body.book.isbn).toBe(bookISBN);
+    })
+});
+
+describe("PUT /books/:isbn", function(){
+    test("Update book", async function(){
+        const res = await request(app).put(`/books/${bookISBN}`)).setEncoding({
+            isbn: "987654321",
+            amazon_url:"https://lucky.com",
+            author:"Lucky",
+            language:"japanese",
+            pages: 100,
+            publisher:"Tai",
+            title:"new title",
+            year: 1997
+        });
+        expect(res.body.book.author).toBe("Lucky")
+    })
+})
+
+describe("DELETE /books/:isbn", function(){
+    test("Delete book", async function(){
+        const res = await request(app).delete(`/books/${bookISBN}`)
+        expect(res.body).toEqual({message: "Book deleted"});
+    });
+});
